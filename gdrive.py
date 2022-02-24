@@ -76,14 +76,10 @@ def get_title(id):
 def download_doc(f,dir):
 	filename=""
 	id=f['id']
-	pdf=False
-	doc=False
 	if isPdf(f):
 		filename=dir+"/"+id+".pdf"
-		pdf=True
 	if isDoc(f):
 		filename=dir+"/"+id+".docx"
-		doc=True
 	f.GetContentFile(filename)
 
 def download(lst, start=0, len=100):
@@ -115,21 +111,27 @@ def convert(filename):
 		pass
 	return txt
 
-def get_contents(lst):
+def get_contents(dir,lst):
 	contents={}
 	i=0
 	for d in lst:
 		o=files[d]
-		txt=get_content_doc(o)
+		if isPdf(o):
+			filename=dir+"/"+id+".pdf"
+		if isDoc(o):
+			filename=dir+"/"+id+".docx"
+		txt=convert(filename)
 		contents[d]=txt
 		i=i+1
 		if i%100==0:
-			contents={}
-			contents_file = open("contents"+str(i/100)+".json", "w")
+			f=str((int)(i/100))
+			contents_file = open("contents_"+f+".json", "w")
 			json.dump(contents, contents_file)
 			contents_file.close()
+			contents={}
 	if len(contents)>0:
-		contents_file = open("contents"+"_rest"+".json", "w")
+		f=str((int)(i/100))
+		contents_file = open("contents_"+f+".json", "w")
 		json.dump(contents, contents_file)
 		contents_file.close()
 

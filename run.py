@@ -1,4 +1,5 @@
 import gdrive as g
+from queue import SimpleQueue
 txts=[]
 g.files={}
 
@@ -17,7 +18,7 @@ txts=g.get_content_files()
 get_contents(txts)
 
 
-download(txts,300,100)
+g.download(txts,500,100)
 a_file = open("files.json", "w")
 json.dump(files, a_file)
 a_file.close()

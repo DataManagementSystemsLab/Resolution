@@ -73,18 +73,30 @@ def get_title(id):
 	l.append( o['title'])
 	return l 
 
-def get_content_doc(f):
+def download_doc(f,dir):
 	filename=""
 	id=f['id']
 	pdf=False
 	doc=False
 	if isPdf(f):
-		filename="tmp/"+id+".pdf"
+		filename=dir+"/"+id+".pdf"
 		pdf=True
 	if isDoc(f):
-		filename="tmp/"+id+".docx"
+		filename=dir+"/"+id+".docx"
 		doc=True
 	f.GetContentFile(filename)
+
+def download(lst, start=0, len=100):
+	for id in lst[start: start+len]:
+		path="tmp/"+str((int)(start/100))
+		isExist = os.path.exists(path)
+		if not isExist:
+			os.mkdir(path)
+		o=files[id]
+		download_doc(o,path)
+
+
+def convert(filename):
 	try:
 		if doc:
 			txt=textract.process(filename)
@@ -112,47 +124,12 @@ def get_contents(lst):
 		contents[d]=txt
 		i=i+1
 		if i%100==0:
+			contents={}
 			contents_file = open("contents"+str(i/100)+".json", "w")
 			json.dump(contents, contents_file)
-	return contents	
+			contents_file.close()
+	if len(contents)>0:
+		contents_file = open("contents"+"_rest"+".json", "w")
+		json.dump(contents, contents_file)
+		contents_file.close()
 
-txts=[]
-files={}
-
-
-folderid='0B0Rlpx3MRZ1SLVFXRFctd0t1cDA'
-q=SimpleQueue()
-q.put(folderid)
-
-gauth = GoogleAuth()
-gauth.LocalWebserverAuth() # client_secrets.json need to be in the same directory as the script
-drive = GoogleDrive(gauth)
-
-
-bfs(drive)
-txts=get_content_files()
-contents=get_contents(txts)
-
-
-a_file = open("files.json", "w")
-a_file = json.dump(files, a_file)
-
-
-
-
-#f_file = open("files.json", "r")
-#a_dictionary = json.load(f_file)
-
-
-
-fileList = drive.ListFile({'q': "'0B0Rlpx3MRZ1SLVFXRFctd0t1cDA' in parents and trashed=false"}).GetList()
-for file in fileList:
-	print(file)
-
- # print('Title: %s, ID: %s' % (file['title'], file['id']))
- MyFiles=["2019-2020 Spring"]
-
-folderid='0B0Rlpx3MRZ1SLVFXRFctd0t1cDA'
-value="'%s' in parents" % (folderid )
-s={}
- 

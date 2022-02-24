@@ -2,13 +2,16 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from queue import SimpleQueue
 import textract
-
+import json
+import os
+import subprocess
 
 def isPdf(f):
 	if 'mimeType' in f:
 		if f['mimeType']=='application/pdf':
 			return True
-	return False		
+	return False
+
 def isDoc(f):
 	if 'mimeType' in f:
 		if f['mimeType']=='application/vnd.openxmlformats-officedocument.wordprocessingml.document':
@@ -28,7 +31,7 @@ def getList(drive, folderid):
 	fileList = drive.ListFile(obj).GetList()
 	return fileList
 
-def process(drive):
+def bfs(drive):
 	while not q.empty():
 		id=q.get()
 		lst=getList(drive,id)
@@ -37,7 +40,7 @@ def process(drive):
 			if isFolder(x):
 				q.put(x['id'])
 
-def get_files(files):
+def get_files():
 	pdfs=[]
 	docs=[]
 	for key,value in files.items():
@@ -45,44 +48,103 @@ def get_files(files):
 			pdfs.append(key)	
 		if isDoc(value):
 			docs.append(key)
-	return (pdfs,docs)			
+	return (pdfs,docs)
+
+def get_content_files():
+	txts=[]
+	for key,value in files.items():
+		if isPdf(value):
+			txts.append(key)	
+		if isDoc(value):
+			txts.append(key)
+	return txts			
 
 def get_title(id):
-	str=""
+	l=[]
 	if id not in files: 
 		return ""
 	o=files[id]
-	parent_title=""
+	parent_title=[]
 	if 'parents' in o:
 		if len(o['parents']) >= 1:
 			pid=o['parents'][0]['id']
 			parent_title=get_title(pid)
-	str= parent_title + o['title']
-	return str 
+	l= parent_title
+	l.append( o['title'])
+	return l 
 
-def get_doc_text(f):
+def get_content_doc(f):
 	filename=""
+	id=f['id']
+	pdf=False
+	doc=False
 	if isPdf(f):
-		filename="a.pdf"
+		filename="tmp/"+id+".pdf"
+		pdf=True
 	if isDoc(f):
-		filename="a.docx"
+		filename="tmp/"+id+".docx"
+		doc=True
 	f.GetContentFile(filename)
-	txt=textract.process(filename)
-	return txt.decode("utf-8")
+	try:
+		if doc:
+			txt=textract.process(filename)
+			#os.remove(filename)
+			txt=txt.decode("utf-8")
+		if pdf:
+			cmd="python3 /Users/user/homebrew/bin/pdf2txt.py "+filename +" --outfile "+ filename+".txt"
+			os.system(cmd)
+			file=open(filename+".txt",mode='r')
+			txt=file.read();
+			file.close()
+			#os.remove(filename)
+			os.remove(filename+".txt")
+	except  Exception as e:
+		print(e)
+		pass
+	return txt
 
+def get_contents(lst):
+	contents={}
+	i=0
+	for d in lst:
+		o=files[d]
+		txt=get_content_doc(o)
+		contents[d]=txt
+		i=i+1
+		if i%100==0:
+			contents_file = open("contents"+str(i/100)+".json", "w")
+			json.dump(contents, contents_file)
+	return contents	
+
+txts=[]
 files={}
 
+
+folderid='0B0Rlpx3MRZ1SLVFXRFctd0t1cDA'
 q=SimpleQueue()
-q.put(folderid);
-
-
-
-
-
+q.put(folderid)
 
 gauth = GoogleAuth()
 gauth.LocalWebserverAuth() # client_secrets.json need to be in the same directory as the script
 drive = GoogleDrive(gauth)
+
+
+bfs(drive)
+txts=get_content_files()
+contents=get_contents(txts)
+
+
+a_file = open("files.json", "w")
+a_file = json.dump(files, a_file)
+
+
+
+
+#f_file = open("files.json", "r")
+#a_dictionary = json.load(f_file)
+
+
+
 fileList = drive.ListFile({'q': "'0B0Rlpx3MRZ1SLVFXRFctd0t1cDA' in parents and trashed=false"}).GetList()
 for file in fileList:
 	print(file)

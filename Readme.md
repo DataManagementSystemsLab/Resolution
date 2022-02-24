@@ -11,7 +11,8 @@ import pytesseract
 from PIL import Image
 
 
-
+https://nanonets.com/blog/ocr-with-tesseract/
+https://towardsdatascience.com/extracting-text-from-scanned-pdf-using-pytesseract-open-cv-cd670ee38052
 
 Code cheats:
 

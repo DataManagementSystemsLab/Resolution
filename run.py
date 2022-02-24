@@ -1,18 +1,19 @@
+import gdrive as g
 txts=[]
-files={}
+g.files={}
 
 
 folderid='0B0Rlpx3MRZ1SLVFXRFctd0t1cDA'
-q=SimpleQueue()
-q.put(folderid)
+g.q=SimpleQueue()
+g.q.put(folderid)
 
-gauth = GoogleAuth()
+gauth = g.GoogleAuth()
 gauth.LocalWebserverAuth() # client_secrets.json need to be in the same directory as the script
-drive = GoogleDrive(gauth)
+drive = g.GoogleDrive(gauth)
 
 
-bfs(drive)
-txts=get_content_files()
+g.bfs(drive)
+txts=g.get_content_files()
 get_contents(txts)
 
 

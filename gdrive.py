@@ -92,8 +92,9 @@ def download(lst, start=0, len=100):
 		download_doc(o,path)
 
 
-def convert(filename):
+def convert(filename, pdf, doc):
 	try:
+		txt=""
 		if doc:
 			txt=textract.process(filename)
 			#os.remove(filename)
@@ -114,14 +115,19 @@ def convert(filename):
 def get_contents(dir,lst):
 	contents={}
 	i=0
-	for d in lst:
-		o=files[d]
+	for id in lst:
+		o=files[id]
+		print(o)
+		pdf=False
+		doc=False
 		if isPdf(o):
 			filename=dir+"/"+id+".pdf"
+			pdf=True
 		if isDoc(o):
 			filename=dir+"/"+id+".docx"
-		txt=convert(filename)
-		contents[d]=txt
+			doc=True
+		txt=convert(filename, pdf, doc)
+		contents[id]=txt
 		i=i+1
 		if i%100==0:
 			f=str((int)(i/100))

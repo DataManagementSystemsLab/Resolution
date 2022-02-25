@@ -24,11 +24,8 @@ json.dump(files, a_file)
 a_file.close()
 
 
-
-
 f_file = open("files.json", "r")
 files = json.load(f_file)
-
 
 
 fileList = drive.ListFile({'q': "'0B0Rlpx3MRZ1SLVFXRFctd0t1cDA' in parents and trashed=false"}).GetList()

@@ -1,3 +1,4 @@
+$ sudo apt install python-pip
 pip install textract
 pip install pydrive
 brew install poppler

@@ -30,16 +30,6 @@ def get_files():
 			docs.append(key)
 	return (pdfs,docs)
 
-def get_content_files():
-	txts=[]
-	for key,value in files.items():
-		if c.isPdf(value):
-			txts.append(key)	
-		if c.isDoc(value):
-			txts.append(key)
-	return txts			
-
-
 def download_doc(f,dir):
 	filename=""
 	id=f['id']

@@ -1,4 +1,6 @@
+import common as c
 import gdrive as g
+
 from queue import SimpleQueue
 txts=[]
 g.files={}
@@ -14,7 +16,8 @@ drive = g.GoogleDrive(gauth)
 
 
 g.bfs(drive)
-txts=g.get_content_files()
+
+txts=c.get_content_files()
 get_contents(txts)
 
 

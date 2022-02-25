@@ -20,6 +20,14 @@ def isFolder(f):
 			return True
 	return False
 
+def get_content_files():
+	txts=[]
+	for key,value in files.items():
+		if isPdf(value):
+			txts.append(key)	
+		if isDoc(value):
+			txts.append(key)
+	return txts		
 
 def convert(filename, pdf, doc):
 	sucess=Flase

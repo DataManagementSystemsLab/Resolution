@@ -20,9 +20,9 @@ def isFolder(f):
 			return True
 	return False
 
-def get_content_files():
+def get_content_files(fs):
 	txts=[]
-	for key,value in files.items():
+	for key,value in fs.items():
 		if isPdf(value):
 			txts.append(key)	
 		if isDoc(value):
@@ -43,11 +43,11 @@ def convert(filename, pdf, doc):
 		return None	
 	return txt
 
-def get_contents(dir,lst):
+def get_contents(dir,fs,lst):
 	contents={}
 	i=0
 	for id in lst:
-		o=files[id]
+		o=fs[id]
 		print(o)
 		pdf=False
 		doc=False
@@ -72,16 +72,16 @@ def get_contents(dir,lst):
 		json.dump(contents, contents_file)
 		contents_file.close()
 
-def get_title(id):
+def get_title(fs, id):
 	l=[]
-	if id not in files: 
+	if id not in fs: 
 		return []
-	o=files[id]
+	o=fs[id]
 	parent_title=[]
 	if 'parents' in o:
 		if len(o['parents']) >= 1:
 			pid=o['parents'][0]['id']
-			parent_title=get_title(pid)
+			parent_title=get_title(fs,pid)
 		l= parent_title
 	l.append( o['title'])
 	return l 

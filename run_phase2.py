@@ -1,3 +1,4 @@
+import json
 import common as c
 
 
@@ -6,4 +7,4 @@ files = json.load(f_file)
 
 txts=c.get_content_files()
 
-#c.get_contents(txt)
+#c.get_contents("files", files, txts)

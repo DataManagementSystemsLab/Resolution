@@ -1,11 +1,13 @@
-$ sudo apt install python-pip
-pip install textract
-pip install pydrive
-brew install poppler
-# pip install opencv-python
+# Requirements 
+
+		sudo apt install python-pip
+		pip install textract
+		pip install pydrive
+		brew install poppler
+		# pip install opencv-python
 
 # use this command to install PIL
-# pip install Pillow
+		# pip install Pillow
 
 import cv2 
 import pytesseract
